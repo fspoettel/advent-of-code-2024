@@ -1,31 +1,6 @@
+use advent_of_code::{Direction, ALL_DIRECTIONS};
+
 advent_of_code::solution!(4);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Direction {
-    N,
-    E,
-    S,
-    W,
-    NE,
-    SE,
-    SW,
-    NW,
-}
-
-impl Direction {
-    pub fn all() -> Vec<Direction> {
-        vec![
-            Direction::N,
-            Direction::E,
-            Direction::S,
-            Direction::W,
-            Direction::NE,
-            Direction::SE,
-            Direction::SW,
-            Direction::NW,
-        ]
-    }
-}
 
 #[derive(Clone)]
 pub struct Point {
@@ -122,7 +97,7 @@ pub fn part_one(input: &str) -> Option<usize> {
             let value = matrix.get(&point);
 
             if value == 'X' {
-                let count: usize = Direction::all()
+                let count: usize = ALL_DIRECTIONS
                     .into_iter()
                     .filter_map(|direction| {
                         let mut current_point = point.clone();
@@ -131,8 +106,9 @@ pub fn part_one(input: &str) -> Option<usize> {
                         for (i, char) in chars.iter().enumerate() {
                             match matrix.neighbor(&current_point, direction) {
                                 Some(point) => {
-                                    current_point = point.clone();
-                                    if *char != matrix.get(&point) {
+                                    current_point = point;
+
+                                    if *char != matrix.get(&current_point) {
                                         return None;
                                     }
                                 }
@@ -158,6 +134,11 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(sum)
 }
 
+const MATCHES: [[Direction; 2]; 2] = [
+    [Direction::SE, Direction::NW],
+    [Direction::SW, Direction::NE],
+];
+
 pub fn part_two(input: &str) -> Option<usize> {
     let matrix = parse_input(input);
 
@@ -169,21 +150,18 @@ pub fn part_two(input: &str) -> Option<usize> {
             if value == 'A' {
                 let point = Point { x, y };
 
-                let matches = [
-                    [Direction::SE, Direction::NW],
-                    [Direction::SW, Direction::NE],
-                ]
-                .iter()
-                .filter(|pair| {
-                    let mut chars: Vec<char> = pair
-                        .iter()
-                        .filter_map(|dir| Some(matrix.get(&matrix.neighbor(&point, *dir)?)))
-                        .collect();
+                let matches = MATCHES
+                    .iter()
+                    .filter(|pair| {
+                        let mut chars: Vec<char> = pair
+                            .iter()
+                            .filter_map(|dir| Some(matrix.get(&matrix.neighbor(&point, *dir)?)))
+                            .collect();
 
-                    chars.sort_unstable();
-                    chars.len() == 2 && chars[0] == 'M' && chars[1] == 'S'
-                })
-                .count()
+                        chars.sort_unstable();
+                        chars.len() == 2 && chars[0] == 'M' && chars[1] == 'S'
+                    })
+                    .count()
                     == 2;
 
                 if matches {

@@ -1,5 +1,5 @@
-use regex::Regex;
 use once_cell::sync::Lazy;
+use regex::Regex;
 
 advent_of_code::solution!(3);
 
@@ -9,10 +9,8 @@ enum Instruction {
     Mul(u32, u32),
 }
 
-static INSTRUCTION_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(mul|do|don't)\(((?:\d|,)*?)\)").unwrap()
-});
-
+static INSTRUCTION_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"(mul|do|don't)\(((?:\d|,)*?)\)").unwrap());
 
 fn parse(input: &str) -> Vec<Instruction> {
     INSTRUCTION_REGEX
@@ -36,12 +34,12 @@ fn parse(input: &str) -> Vec<Instruction> {
 pub fn part_one(input: &str) -> Option<u32> {
     Some(
         parse(input)
-        .into_iter()
-        .filter_map(|instruction| match instruction {
-            Instruction::Mul(x, y) => Some(x * y),
-            _ => None,
-        })
-        .sum()
+            .into_iter()
+            .filter_map(|instruction| match instruction {
+                Instruction::Mul(x, y) => Some(x * y),
+                _ => None,
+            })
+            .sum(),
     )
 }
 
