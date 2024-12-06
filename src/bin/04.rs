@@ -1,12 +1,6 @@
-use advent_of_code::{Direction, ALL_DIRECTIONS};
+use advent_of_code::{Direction, Point, ALL_DIRECTIONS};
 
 advent_of_code::solution!(4);
-
-#[derive(Clone)]
-pub struct Point {
-    x: usize,
-    y: usize,
-}
 
 pub struct Matrix {
     pub cells: Vec<Vec<char>>,
@@ -16,53 +10,19 @@ pub struct Matrix {
 
 impl Matrix {
     fn get(&self, point: &Point) -> char {
-        self.cells[point.y][point.x]
+        self.cells[point.y as usize][point.x as usize]
+    }
+
+    fn point_inside(&self, point: &Point) -> bool {
+        point.x >= 0 && point.x < self.cols as isize && point.y >= 0 && point.y < self.rows as isize
     }
 
     fn neighbor(&self, point: &Point, direction: Direction) -> Option<Point> {
-        match direction {
-            Direction::N => {
-                let x = point.x;
-                let y = point.y.checked_sub(1)?;
-                Some(Point { x, y })
-            }
-            Direction::E => {
-                let x = if point.x + 1 < self.cols {
-                    point.x + 1
-                } else {
-                    return None;
-                };
-                Some(Point { x, y: point.y })
-            }
-            Direction::S => {
-                let y = if point.y + 1 < self.rows {
-                    point.y + 1
-                } else {
-                    return None;
-                };
-                Some(Point { x: point.x, y })
-            }
-            Direction::W => {
-                let x = point.x.checked_sub(1)?;
-                let y = point.y;
-                Some(Point { x, y })
-            }
-            Direction::NE => {
-                let point_east = self.neighbor(point, Direction::E)?;
-                self.neighbor(&point_east, Direction::N)
-            }
-            Direction::NW => {
-                let point_west = self.neighbor(point, Direction::W)?;
-                self.neighbor(&point_west, Direction::N)
-            }
-            Direction::SE => {
-                let point_east = self.neighbor(point, Direction::E)?;
-                self.neighbor(&point_east, Direction::S)
-            }
-            Direction::SW => {
-                let point_west = self.neighbor(point, Direction::W)?;
-                self.neighbor(&point_west, Direction::S)
-            }
+        let neighbor = point.neighbor(direction);
+        if self.point_inside(&neighbor) {
+            Some(neighbor)
+        } else {
+            None
         }
     }
 }
@@ -93,14 +53,14 @@ pub fn part_one(input: &str) -> Option<usize> {
 
     for y in 0..matrix.cols {
         for x in 0..matrix.rows {
-            let point = Point { x, y };
+            let point = Point { x: x as isize, y: y as isize };
             let value = matrix.get(&point);
 
             if value == 'X' {
                 let count: usize = ALL_DIRECTIONS
                     .into_iter()
                     .filter_map(|direction| {
-                        let mut current_point = point.clone();
+                        let mut current_point = point;
                         let mut counter = 0;
 
                         for (i, char) in chars.iter().enumerate() {
@@ -146,10 +106,9 @@ pub fn part_two(input: &str) -> Option<usize> {
 
     for y in 0..matrix.cols {
         for x in 0..matrix.rows {
-            let value = matrix.get(&Point { x, y });
+            let point = Point { x: x as isize, y: y as isize };
+            let value = matrix.get(&point);
             if value == 'A' {
-                let point = Point { x, y };
-
                 let matches = MATCHES
                     .iter()
                     .filter(|pair| {
