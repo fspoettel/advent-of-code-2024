@@ -76,7 +76,7 @@ fn parse(input: &str) -> (SparseGrid, Guard) {
     )
 }
 
-fn walk_path(grid: &SparseGrid, guard: &mut Guard) -> Option<usize> {
+fn walk_path(grid: &SparseGrid, guard: &mut Guard) -> Option<HashSet<Point>> {
     let mut guards: HashSet<Guard> = HashSet::from_iter([*guard]);
 
     loop {
@@ -97,12 +97,12 @@ fn walk_path(grid: &SparseGrid, guard: &mut Guard) -> Option<usize> {
     }
 
     let set: HashSet<Point> = HashSet::from_iter(guards.iter().map(|g| g.position));
-    Some(set.len())
+    Some(set)
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
     let (grid, mut guard) = parse(input);
-    walk_path(&grid, &mut guard)
+    walk_path(&grid, &mut guard).map(|set| set.len())
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
@@ -110,22 +110,25 @@ pub fn part_two(input: &str) -> Option<usize> {
 
     let mut cycles = 0;
 
+    let original_path = walk_path(&grid, &mut guard.clone()).unwrap();
+
     for x in 0..grid.cols {
         for y in 0..grid.rows {
-            let mut loop_grid = grid.clone();
+            let point = Point {
+                x: x as isize,
+                y: y as isize,
+            };
 
-            loop_grid.entries.insert(
-                Point {
-                    x: x as isize,
-                    y: y as isize,
-                },
-                true,
-            );
+            if original_path.contains(&point) {
+                let mut loop_grid = grid.clone();
 
-            let mut loop_guard = guard;
+                loop_grid.entries.insert(point, true);
 
-            if walk_path(&loop_grid, &mut loop_guard).is_none() {
-                cycles += 1;
+                let mut loop_guard = guard;
+
+                if walk_path(&loop_grid, &mut loop_guard).is_none() {
+                    cycles += 1;
+                }
             }
         }
     }
