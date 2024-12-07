@@ -53,7 +53,10 @@ pub fn part_one(input: &str) -> Option<usize> {
 
     for y in 0..matrix.cols {
         for x in 0..matrix.rows {
-            let point = Point { x: x as isize, y: y as isize };
+            let point = Point {
+                x: x as isize,
+                y: y as isize,
+            };
             let value = matrix.get(&point);
 
             if value == 'X' {
@@ -106,7 +109,10 @@ pub fn part_two(input: &str) -> Option<usize> {
 
     for y in 0..matrix.cols {
         for x in 0..matrix.rows {
-            let point = Point { x: x as isize, y: y as isize };
+            let point = Point {
+                x: x as isize,
+                y: y as isize,
+            };
             let value = matrix.get(&point);
             if value == 'A' {
                 let matches = MATCHES

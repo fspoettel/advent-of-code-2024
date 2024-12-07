@@ -2,7 +2,7 @@ pub mod template;
 
 // Use this file to add helper functions and additional modules.
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, )]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Point {
     pub x: isize,
     pub y: isize,
@@ -11,14 +11,38 @@ pub struct Point {
 impl Point {
     pub fn neighbor(&self, direction: Direction) -> Point {
         match direction {
-            Direction::N => Point { x: self.x, y: self.y - 1 },
-            Direction::E => Point { x: self.x + 1, y: self.y },
-            Direction::S => Point { x: self.x, y: self.y + 1 },
-            Direction::W => Point { x: self.x - 1, y: self.y },
-            Direction::NE => Point{ x: self.x + 1, y: self.y - 1 },
-            Direction::NW => Point { x: self.x - 1, y: self.y - 1 },
-            Direction::SE => Point { x: self.x + 1, y: self.y + 1 },
-            Direction::SW => Point { x: self.x - 1, y: self.y + 1 }
+            Direction::N => Point {
+                x: self.x,
+                y: self.y - 1,
+            },
+            Direction::E => Point {
+                x: self.x + 1,
+                y: self.y,
+            },
+            Direction::S => Point {
+                x: self.x,
+                y: self.y + 1,
+            },
+            Direction::W => Point {
+                x: self.x - 1,
+                y: self.y,
+            },
+            Direction::NE => Point {
+                x: self.x + 1,
+                y: self.y - 1,
+            },
+            Direction::NW => Point {
+                x: self.x - 1,
+                y: self.y - 1,
+            },
+            Direction::SE => Point {
+                x: self.x + 1,
+                y: self.y + 1,
+            },
+            Direction::SW => Point {
+                x: self.x - 1,
+                y: self.y + 1,
+            },
         }
     }
 }

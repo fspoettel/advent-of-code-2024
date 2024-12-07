@@ -121,11 +121,9 @@ pub fn part_two(input: &str) -> Option<usize> {
 
             if original_path.contains(&point) {
                 let mut loop_grid = grid.clone();
-
-                loop_grid.entries.insert(point, true);
-
                 let mut loop_guard = guard;
 
+                loop_grid.entries.insert(point, true);
                 if walk_path(&loop_grid, &mut loop_guard).is_none() {
                     cycles += 1;
                 }
