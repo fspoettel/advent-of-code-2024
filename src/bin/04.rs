@@ -1,33 +1,8 @@
-use advent_of_code::{Direction, Point, ALL_DIRECTIONS};
+use advent_of_code::{Direction, Matrix, Point, ALL_DIRECTIONS};
 
 advent_of_code::solution!(4);
 
-pub struct Matrix {
-    pub cells: Vec<Vec<char>>,
-    pub cols: usize,
-    pub rows: usize,
-}
-
-impl Matrix {
-    fn get(&self, point: &Point) -> char {
-        self.cells[point.y as usize][point.x as usize]
-    }
-
-    fn point_inside(&self, point: &Point) -> bool {
-        point.x >= 0 && point.x < self.cols as isize && point.y >= 0 && point.y < self.rows as isize
-    }
-
-    fn neighbor(&self, point: &Point, direction: Direction) -> Option<Point> {
-        let neighbor = point.neighbor(direction);
-        if self.point_inside(&neighbor) {
-            Some(neighbor)
-        } else {
-            None
-        }
-    }
-}
-
-fn parse_input(input: &str) -> Matrix {
+fn parse_input(input: &str) -> Matrix<char> {
     let cells: Vec<Vec<char>> = input
         .lines()
         .filter_map(|line| {

@@ -9,6 +9,7 @@ pub struct Point {
 }
 
 impl Point {
+    #[inline(always)]
     pub fn neighbor(&self, direction: Direction) -> Point {
         match direction {
             Direction::N => Point {
@@ -44,6 +45,14 @@ impl Point {
                 y: self.y + 1,
             },
         }
+    }
+
+    pub fn manhattan_distance(&self, other: &Point) -> isize {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+
+    pub fn euclidean_distance(&self, other: &Point) -> f32 {
+        (((self.x - other.x).pow(2) + (self.y - other.y).pow(2)) as f32).sqrt()
     }
 }
 
@@ -98,6 +107,32 @@ impl Direction {
             Direction::NE => Direction::SE,
             Direction::SE => Direction::SW,
             Direction::SW => Direction::NW,
+        }
+    }
+}
+
+pub struct Matrix<T> {
+    pub cells: Vec<Vec<T>>,
+    pub cols: usize,
+    pub rows: usize,
+}
+
+impl<T: Copy> Matrix<T> {
+    pub fn get(&self, point: &Point) -> T {
+        self.cells[point.y as usize][point.x as usize]
+    }
+
+    pub fn point_inside(&self, point: &Point) -> bool {
+        point.x >= 0 && point.x < self.cols as isize && point.y >= 0 && point.y < self.rows as isize
+    }
+
+    pub fn neighbor(&self, point: &Point, direction: Direction) -> Option<Point> {
+        let neighbor = point.neighbor(direction);
+
+        if self.point_inside(&neighbor) {
+            Some(neighbor)
+        } else {
+            None
         }
     }
 }
