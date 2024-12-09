@@ -1,17 +1,20 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 advent_of_code::solution!(9);
 
+#[derive(Clone, Copy)]
 enum Allocation {
     File(File),
     Free(u32),
 }
 
+#[derive(Clone, Copy)]
 struct File {
     id: u32,
     size: u32,
 }
 
+#[derive(Debug)]
 enum Block {
     File(u32),
     Free,
@@ -26,6 +29,7 @@ fn parse(input: &str) -> Vec<Allocation> {
         .enumerate()
         .fold(vec![], |mut acc, (i, char)| {
             let size = char.to_digit(10).unwrap();
+
             if i % 2 == 0 {
                 acc.push(Allocation::File(File {
                     id: (i as u32 / 2),
@@ -34,6 +38,7 @@ fn parse(input: &str) -> Vec<Allocation> {
             } else {
                 acc.push(Allocation::Free(size));
             }
+
             acc
         })
 }
@@ -89,61 +94,46 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let allocations = parse(input);
 
-    let file_size_map = allocations
-        .iter()
-        .fold(HashMap::new(), |mut acc, allocation| {
-            if let Allocation::File(file) = allocation {
-                *acc.entry(file.id).or_default() = file.size;
-            }
-            acc
-        });
+    let mut defragged = allocations.clone();
 
-    let mut disk = allocate_disk(&allocations);
-    let mut moved: HashSet<u32> = HashSet::new();
+    allocations.iter().rev().for_each(|to_move| {
+        if let Allocation::File(file) = to_move {
+            let target = defragged.iter().enumerate().find_map(|(idx, alloc)| {
+                if let Allocation::Free(size) = alloc {
+                    if file.size <= *size {
+                        let free_space_left = size - file.size;
+                        let mut to_insert = vec![*to_move];
 
-    let mut i = disk.len() - 1;
+                        if free_space_left > 0 {
+                            to_insert.push(Allocation::Free(free_space_left));
+                        }
 
-    while i > 0 {
-        if let Block::File(id) = &disk[i] {
-            if moved.contains(id) {
-                i -= 1;
-                continue;
-            }
-
-            let size = file_size_map.get(id).copied().unwrap() as usize;
-
-            let file_start = i + 1 - size;
-            let file_end = i;
-
-            let mut j = 0;
-            let mut current_free = 0;
-
-            while j < file_start && current_free < size {
-                match disk[j] {
-                    Block::Free => current_free += 1,
-                    Block::File(_) => current_free = 0,
+                        return Some((idx, to_insert));
+                    }
                 }
-                j += 1;
-            }
 
-            if current_free == size {
-                moved.insert(*id);
-                for k in 0..size {
-                    disk.swap(j - size + k, file_end - k);
-                }
-            }
+                None
+            });
 
-            if size <= i {
-                i -= size;
+            if let Some((target_idx, to_insert)) = target {
+                defragged.splice(target_idx..=target_idx, to_insert);
+            }
+        }
+    });
+
+    let mut seen: HashSet<u32> = HashSet::new();
+
+    for allocation in &mut defragged {
+        if let Allocation::File(file) = allocation {
+            if seen.contains(&file.id) {
+                *allocation = Allocation::Free(file.size);
             } else {
-                break;
+                seen.insert(file.id);
             }
-        } else {
-            i -= 1;
         }
     }
 
-    Some(checksum(&disk))
+    Some(checksum(&allocate_disk(&defragged)))
 }
 
 #[cfg(test)]
