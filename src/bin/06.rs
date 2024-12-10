@@ -80,7 +80,7 @@ fn walk_path(grid: &SparseGrid, guard: &mut Guard) -> Option<HashSet<Point>> {
     let mut guards: HashSet<Guard> = HashSet::from_iter([*guard]);
 
     loop {
-        let next_position = guard.position.neighbor(guard.direction);
+        let next_position = guard.position.neighbor(&guard.direction);
 
         if !grid.point_inside(&next_position) {
             break;

@@ -10,7 +10,7 @@ pub struct Point {
 
 impl Point {
     #[inline(always)]
-    pub fn neighbor(&self, direction: Direction) -> Point {
+    pub fn neighbor(&self, direction: &Direction) -> Point {
         match direction {
             Direction::N => Point {
                 x: self.x,
@@ -111,10 +111,19 @@ impl Direction {
     }
 }
 
+#[derive(Debug)]
 pub struct Matrix<T> {
     pub cells: Vec<Vec<T>>,
     pub cols: usize,
     pub rows: usize,
+}
+
+impl<T> From<Vec<Vec<T>>> for Matrix<T> {
+    fn from(cells: Vec<Vec<T>>) -> Self {
+        let rows = cells.len();
+        let cols = cells[0].len();
+        Self { cells, rows, cols }
+    }
 }
 
 impl<T: Copy> Matrix<T> {
@@ -126,7 +135,7 @@ impl<T: Copy> Matrix<T> {
         point.x >= 0 && point.x < self.cols as isize && point.y >= 0 && point.y < self.rows as isize
     }
 
-    pub fn neighbor(&self, point: &Point, direction: Direction) -> Option<Point> {
+    pub fn neighbor(&self, point: &Point, direction: &Direction) -> Option<Point> {
         let neighbor = point.neighbor(direction);
 
         if self.point_inside(&neighbor) {

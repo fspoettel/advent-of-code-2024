@@ -42,7 +42,7 @@ pub fn part_one(input: &str) -> Option<usize> {
                         let mut counter = 0;
 
                         for (i, char) in chars.iter().enumerate() {
-                            match matrix.neighbor(&current_point, direction) {
+                            match matrix.neighbor(&current_point, &direction) {
                                 Some(point) => {
                                     current_point = point;
 
@@ -95,7 +95,7 @@ pub fn part_two(input: &str) -> Option<usize> {
                     .filter(|pair| {
                         let mut chars: Vec<char> = pair
                             .iter()
-                            .filter_map(|dir| Some(matrix.get(&matrix.neighbor(&point, *dir)?)))
+                            .filter_map(|dir| Some(matrix.get(&matrix.neighbor(&point, dir)?)))
                             .collect();
 
                         chars.sort_unstable();
