@@ -28,6 +28,7 @@ pico-args = "0.5.0"
 tinyjson = "2.5.1"
 
 # Solution dependencies
+cached = "0.54.0"
 regex = "1.11.1"
 once_cell = "1.20.2"
 itertools = "0.13.0"
