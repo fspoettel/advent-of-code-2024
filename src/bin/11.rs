@@ -1,4 +1,4 @@
-use cached::proc_macro::cached;
+use cached::{proc_macro::cached, Cached};
 
 advent_of_code::solution!(11);
 
@@ -12,7 +12,7 @@ fn parse(input: &str) -> Vec<u64> {
         .collect()
 }
 
-#[cached]
+#[cached(name = "BLINK_CACHE")]
 fn blink(stone: u64, times: u64) -> u64 {
     if times == 0 {
         return 1;
@@ -33,10 +33,12 @@ fn blink(stone: u64, times: u64) -> u64 {
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
+    BLINK_CACHE.lock().unwrap().cache_reset();
     Some(parse(input).into_iter().map(|x| blink(x, 25)).sum())
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
+    BLINK_CACHE.lock().unwrap().cache_reset();
     Some(parse(input).into_iter().map(|x| blink(x, 75)).sum())
 }
 
